@@ -150,9 +150,10 @@ pub(crate) fn normalize_repo_url(url: &str) -> String {
 
 /// Blocking HTTP client for registry and git-host APIs.
 ///
-/// TLS trust anchors come from the OS certificate store (`rustls-tls-native-roots`).
-/// A corporate proxy CA installed in that store is trusted the same way `curl` trusts it.
-/// The bundled Mozilla roots do not include those CAs.
+/// Trust anchors are the union of the OS certificate store (`rustls-tls-native-roots`)
+/// and the bundled Mozilla roots (`rustls-tls-webpki-roots`). A corporate proxy CA
+/// installed in the OS store is trusted the same way `curl` trusts it. When that
+/// store is missing or empty, the Mozilla roots still allow HTTPS.
 pub(crate) fn http_client() -> reqwest::blocking::Client {
     reqwest::blocking::Client::builder()
         .timeout(std::time::Duration::from_secs(30))
